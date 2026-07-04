@@ -898,7 +898,7 @@ function render() {
   // chosen zoom distance and orbit angle (set via OrbitControls) are preserved;
   // only the absolute world-space position of the rig shifts with Earth.
   earth.getWorldPosition(_earthPosCurrent);
-  if ((zoomState === "earthview" || eclipsePhase !== "none") && _earthPosInitialized) {
+  if (!isARMode && (zoomState === "earthview" || eclipsePhase !== "none") && _earthPosInitialized) {
     _earthPosDelta.subVectors(_earthPosCurrent, _earthPosPrev);
     camera.position.add(_earthPosDelta);
     controls.target.add(_earthPosDelta);
@@ -907,7 +907,13 @@ function render() {
   _earthPosInitialized = true;
 
   updateTiltIndicator();
-  controls.update();
+  // In AR, WebXR owns camera.position/rotation via the tracked device pose each
+  // frame — calling OrbitControls.update() here would immediately overwrite that
+  // pose with its own stale spherical-coordinate math, fighting the phone's
+  // tracking and making the scene appear to drift/slide as you move the phone.
+  if (!isARMode) {
+    controls.update();
+  }
   renderer.render(scene, camera);
 }
 
