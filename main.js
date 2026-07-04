@@ -1043,15 +1043,48 @@ function onARSessionEnd() {
 // ARButton handles all browser compatibility checks — if WebXR AR is not
 // supported it shows a "AR NOT SUPPORTED" message instead of crashing.
 const arButton = ARButton.createButton(renderer, {
-  requiredFeatures: ["local"],
-  optionalFeatures: ["dom-overlay", "hit-test"],
-  domOverlay: { root: document.body }
+  requiredFeatures: ["hit-test"],
+  optionalFeatures: ["dom-overlay"],
+  domOverlay: { root: document.getElementById("ui-overlay") },
 });
+
+// On-screen error display — shows AR errors directly on the phone screen
+// without needing USB debugging. Remove once AR is confirmed working.
+function showARError(msg) {
+  let el = document.getElementById("ar-error-display");
+  if (!el) {
+    el = document.createElement("div");
+    el.id = "ar-error-display";
+    el.style.cssText = `
+      position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+      background:rgba(0,0,0,0.92); color:#ff6b6b; padding:20px 24px;
+      border-radius:12px; border:1px solid #ff6b6b; font-size:0.78rem;
+      line-height:1.5; max-width:85vw; z-index:9999;
+      font-family:-apple-system,sans-serif; text-align:center;
+    `;
+    document.body.appendChild(el);
+  }
+  el.innerHTML = `<strong>AR Error</strong><br><br>${msg}<br><br><small>Tap anywhere to dismiss</small>`;
+  el.onclick = () => el.remove();
+}
+
+// Check WebXR support before even trying
+if (!navigator.xr) {
+  showARError("navigator.xr is undefined — WebXR is not available in this browser. Make sure you are using Chrome on Android (not iOS, not Firefox, not Samsung Internet).");
+} else {
+  navigator.xr.isSessionSupported("immersive-ar").then(supported => {
+    if (!supported) {
+      showARError("WebXR immersive-ar is NOT supported on this device/browser. Your device may not support ARCore, or Chrome flags may need enabling at chrome://flags — search for 'WebXR' and enable all WebXR options.");
+    }
+  }).catch(err => {
+    showARError("xr.isSessionSupported threw: " + err.message);
+  });
+}
 
 // Style the button to match the app's design language
 arButton.style.cssText = `
   position: fixed;
-  top: max(24px, env(safe-area-inset-top)); /* Changed from bottom to top */
+  bottom: max(24px, env(safe-area-inset-bottom));
   right: 16px;
   padding: 10px 18px;
   border-radius: 10px;
@@ -1071,4 +1104,3 @@ document.getElementById("ar-button-container").appendChild(arButton);
 // Wire session events
 renderer.xr.addEventListener("sessionstart", onARSessionStart);
 renderer.xr.addEventListener("sessionend",   onARSessionEnd);
-
