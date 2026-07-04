@@ -472,6 +472,7 @@ function finishZoomOut() {
 function easeInOut(t) { return t<0.5?2*t*t:-1+(4-2*t)*t; }
 
 function tickZoom(delta) {
+  if (isARMode) return; // never drive camera.position manually while WebXR owns it
   if (zoomState!=="zooming"&&zoomState!=="zoomingout") return;
   zoomT = Math.min(1, zoomT+delta*ZOOM_SPEED);
   const e = easeInOut(zoomT);
@@ -684,6 +685,14 @@ document.getElementById("earthview-exit-btn").addEventListener("click", () => {
 // TAP / CLICK HANDLING
 // =============================================================
 function onPointerUp(e) {
+  // Tap-to-zoom is a desktop/mobile-screen feature that flies the camera
+  // through pre-AR, full-scale world coordinates. In AR, camera.position is
+  // owned entirely by WebXR's tracked device pose — running this at the same
+  // time causes the two to fight every frame (visible as jitter/drift), and
+  // finishZoomIn() also force-shows desktop UI buttons that AR deliberately
+  // hides. So this whole feature must no-op while an AR session is active.
+  if (isARMode) return;
+
   if (controls.enabled && controls._pointerPositionOnMouseDown) return;
 
   const rect    = canvas.getBoundingClientRect();
@@ -997,6 +1006,14 @@ let preARTarget = new THREE.Vector3();
 
 function onARSessionStart() {
   isARMode = true;
+
+  // Force a clean state: if the user was zoomed into Earth or mid-eclipse
+  // right before tapping the AR button, that leftover state (and any
+  // in-flight tween) must not carry into AR, since camera.position is about
+  // to become fully owned by WebXR's tracked device pose.
+  zoomState = "overview";
+  if (eclipsePhase !== "none") exitEclipseMode();
+  hideInfoBubble();
 
   // Hide Milky Way — camera feed becomes the background
   milkyWaySphere.visible = false;
