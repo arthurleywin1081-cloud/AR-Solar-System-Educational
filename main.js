@@ -1081,10 +1081,21 @@ if (!navigator.xr) {
   });
 }
 
-// Style the button to match the app's design language
+// Direct tap handler to catch session start errors visibly on screen
+arButton.addEventListener("click", () => {
+  navigator.xr.requestSession("immersive-ar", {
+    requiredFeatures: ["hit-test"],
+    optionalFeatures: ["dom-overlay"],
+    domOverlay: { root: document.getElementById("ui-overlay") },
+  }).then(session => {
+    showARError("Session started OK — but renderer didn't pick it up. Session id: " + (session.visibilityState || "unknown"));
+  }).catch(err => {
+    showARError("requestSession failed: " + err.name + " — " + err.message);
+  });
+}, { once: true });
 arButton.style.cssText = `
   position: fixed;
-  top: max(24px, env(safe-area-inset-top));
+  bottom: max(24px, env(safe-area-inset-bottom));
   right: 16px;
   padding: 10px 18px;
   border-radius: 10px;
