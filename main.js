@@ -1043,9 +1043,9 @@ function onARSessionEnd() {
 // ARButton handles all browser compatibility checks — if WebXR AR is not
 // supported it shows a "AR NOT SUPPORTED" message instead of crashing.
 const arButton = ARButton.createButton(renderer, {
-  requiredFeatures: ["local"],   // FIXED: Added "local" so the tracking system can actually start
-  optionalFeatures: ["dom-overlay", "hit-test"], // Moved hit-test here so it doesn't strictly block the app
-  domOverlay: { root: document.body },
+  requiredFeatures: ["local"],
+  optionalFeatures: ["dom-overlay", "hit-test"],
+  domOverlay: { root: document.body }
 });
 
 // Style the button to match the app's design language
