@@ -1084,7 +1084,7 @@ if (!navigator.xr) {
 // Style the button to match the app's design language
 arButton.style.cssText = `
   position: fixed;
-  top: max(24px, env(safe-area-inset-top)); /* Changed from bottom to top */
+  top: max(24px, env(safe-area-inset-top));
   right: 16px;
   padding: 10px 18px;
   border-radius: 10px;
