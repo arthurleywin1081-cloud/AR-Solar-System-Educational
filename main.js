@@ -1,19 +1,3 @@
-// ============================================================
-// main.js — AR Solar System (Educational)
-//
-// SPEC IMPLEMENTATION: solar-system-prompt_2.md
-//
-// §1 Timing:   SECONDS_PER_SIM_DAY = 2; all periods derived from it.
-//              Sun differential rotation by latitude.
-//              Moon 5.1° orbital tilt. Fixed world-space tilt axis.
-// §2 Eclipse:  Demo mode with solar/lunar selection, eased alignment,
-//              shadows, info bubble, exit-only button.
-// §3 Zoom:     Speed reduced to 45% (ZOOM_SPEED = 0.45).
-// §4 Seasons:  Perihelion = NH winter. Fixed tilt. Kepler speed variation.
-//              Ellipse with Sun at focus.
-// §5 Time:     Single SECONDS_PER_SIM_DAY constant drives everything.
-// ============================================================
-
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { ARButton } from "three/addons/webxr/ARButton.js";
