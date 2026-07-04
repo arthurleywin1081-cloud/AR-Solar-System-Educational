@@ -1095,7 +1095,7 @@ arButton.addEventListener("click", () => {
 }, { once: true });
 arButton.style.cssText = `
   position: fixed;
-  bottom: max(24px, env(safe-area-inset-bottom));
+  top: max(24px, env(safe-area-inset-top));
   right: 16px;
   padding: 10px 18px;
   border-radius: 10px;
