@@ -1043,9 +1043,10 @@ function onARSessionEnd() {
 // ARButton handles all browser compatibility checks — if WebXR AR is not
 // supported it shows a "AR NOT SUPPORTED" message instead of crashing.
 const arButton = ARButton.createButton(renderer, {
-  requiredFeatures: ["hit-test"],   // enables plane detection for placement
-  optionalFeatures: ["dom-overlay"], // lets 2D HTML show over the AR camera feed
-  domOverlay: { root: document.getElementById("ui-overlay") },
+  requiredFeatures: ["hit-test"],   
+  optionalFeatures: ["dom-overlay"], 
+  // Changed the root to target the document body directly
+  domOverlay: { root: document.body },
 });
 
 // Style the button to match the app's design language
